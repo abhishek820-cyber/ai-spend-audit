@@ -1,38 +1,27 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { useState } from 'react'
+import SpendForm from '@/components/SpendForm'
 
 export default function Home() {
-  const [status, setStatus] = useState('Connecting to database...')
+  const [auditData, setAuditData] = useState(null)
 
-  useEffect(() => {
-    const testConnection = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('audits')
-          .select('id')
-          .limit(1)
-
-        if (error) {
-          console.error('Supabase error:', error)
-          setStatus(`Error: ${error.message}`)
-        } else {
-          setStatus('✓ DB Connected Successfully')
-        }
-      } catch (err) {
-        console.error('Exception:', err)
-        setStatus(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`)
-      }
-    }
-
-    testConnection()
-  }, [])
+  const handleFormSubmit = (data: any) => {
+    console.log('Form submitted:', data)
+    setAuditData(data)
+    // We'll add the audit logic next
+  }
 
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold">AI Spend Audit</h1>
-      <p className="mt-4 text-lg">{status}</p>
+    <main className="min-h-screen bg-gray-50 py-12">
+      {!auditData ? (
+        <SpendForm onSubmit={handleFormSubmit} />
+      ) : (
+        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
+          <h1 className="text-3xl font-bold mb-4">Your Audit Results</h1>
+          <pre>{JSON.stringify(auditData, null, 2)}</pre>
+        </div>
+      )}
     </main>
   )
 }
