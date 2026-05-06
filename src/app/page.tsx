@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import SpendForm from '@/components/SpendForm'
 import AuditResults from '@/components/AuditResults'
+import LeadCapture from '@/components/LeadCapture'
 import { generateAudit, type ToolInput } from '@/lib/auditEngine'
 import { supabase } from '@/lib/supabase'
 
@@ -72,12 +73,17 @@ export default function Home() {
             )}
           </div>
         ) : (
-          <AuditResults
-            results={auditData.results}
-            totalMonthlySavings={auditData.totalMonthlySavings}
-            totalAnnualSavings={auditData.totalAnnualSavings}
-            onShare={handleShare}
-          />
+          <div className="space-y-8">
+            <AuditResults
+              results={auditData.results}
+              totalMonthlySavings={auditData.totalMonthlySavings}
+              totalAnnualSavings={auditData.totalAnnualSavings}
+              onShare={handleShare}
+            />
+            <div className="bg-white rounded-lg shadow-xl p-8">
+              <LeadCapture auditId={auditId!} monthlySavings={auditData.totalMonthlySavings} />
+            </div>
+          </div>
         )}
       </div>
     </main>
