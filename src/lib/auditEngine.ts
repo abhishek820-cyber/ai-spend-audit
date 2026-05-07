@@ -14,8 +14,14 @@ interface AuditResult {
   reasoning: string
 }
 
+interface PlanInfo {
+  price: number
+  seats: number | null
+  type: 'free' | 'monthly' | 'per_seat' | 'pay_as_you_go' | 'custom'
+}
+
 // Pricing data - MUST match official pricing pages
-const PRICING = {
+const PRICING: Record<string, Record<string, PlanInfo>> = {
   Cursor: {
     Hobby: { price: 0, seats: 1, type: 'free' },
     Pro: { price: 20, seats: 1, type: 'monthly' },
@@ -50,7 +56,7 @@ const PRICING = {
 }
 
 function analyzeToolSpend(tool: ToolInput): AuditResult {
-  const toolPricing = PRICING[tool.name as keyof typeof PRICING]
+  const toolPricing = PRICING[tool.name]
   if (!toolPricing) {
     return {
       toolName: tool.name,
@@ -62,7 +68,7 @@ function analyzeToolSpend(tool: ToolInput): AuditResult {
     }
   }
 
-  const planInfo = toolPricing[tool.plan as keyof typeof toolPricing]
+  const planInfo = toolPricing[tool.plan]
   if (!planInfo) {
     return {
       toolName: tool.name,
@@ -91,7 +97,6 @@ function analyzeToolSpend(tool: ToolInput): AuditResult {
   } else if (planInfo.type === 'monthly') {
     expectedMonthlyCost = planInfo.price * tool.seats
     if (tool.monthlySpend > expectedMonthlyCost * 1.1) {
-      // User is overpaying by >10%
       recommendation = `Downgrade or negotiate`
       reasoning = `Expected cost: $${expectedMonthlyCost.toFixed(2)}/month (${planInfo.price} × ${tool.seats} seats). You're paying $${tool.monthlySpend}/month. Investigate overages or request a discount.`
     } else if (tool.monthlySpend < expectedMonthlyCost * 0.9) {
@@ -102,8 +107,7 @@ function analyzeToolSpend(tool: ToolInput): AuditResult {
       reasoning = `Cost aligns with plan: $${expectedMonthlyCost.toFixed(2)}/month for ${tool.seats} seats.`
     }
   } else if (planInfo.type === 'per_seat') {
-    // Team plans scale with seats
-    expectedMonthlyCost = planInfo.price * tool.seats
+    expectedMonthlyCost = planInfo.price * tool.seats!
     if (tool.monthlySpend > expectedMonthlyCost * 1.1) {
       recommendation = `Review seat count`
       reasoning = `At $${planInfo.price}/seat/month with ${tool.seats} seats, expected cost is $${expectedMonthlyCost.toFixed(2)}/month. You're paying $${tool.monthlySpend}/month — verify all seats are active.`
