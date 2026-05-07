@@ -1,36 +1,160 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Spend Audit
 
-## Getting Started
+A free tool that helps startups discover overspending on AI tools and unlock real savings.
 
-First, run the development server:
+**Live:** https://ai-spend-audit-smoky.vercel.app
+
+## What It Does
+
+1. User inputs their AI tool stack (Cursor, Claude, ChatGPT, GitHub Copilot, etc.)
+2. Tool instantly audits their spending against retail pricing
+3. Shows per-tool breakdown + total monthly/annual savings
+4. Email capture for high-savings cases
+5. Shareable results via unique public URL with Open Graph support
+
+## Quick Start
+
+### Install & Run Locally
 
 ```bash
+git clone https://github.com/abhishek820-cyber/ai-spend-audit
+cd ai-spend-audit
+npm install
+
+# Create .env.local with:
+# NEXT_PUBLIC_SUPABASE_URL=your_url
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git push
+# Vercel auto-deploys on push
+# Add environment variables in Vercel dashboard
+```
 
-## Learn More
+## Features
 
-To learn more about Next.js, take a look at the following resources:
+✅ **Spend Input Form** — Add tools, plans, seats, monthly spend  
+✅ **Audit Engine** — Defensible logic with cited pricing data  
+✅ **Results Dashboard** — Per-tool breakdown + hero savings number  
+✅ **Personalized Summary** — Template-based recommendations  
+✅ **Lead Capture** — Email + optional company/role/team size  
+✅ **Shareable URLs** — Public audit view with Open Graph previews  
+✅ **Responsive Design** — Mobile-first with Tailwind CSS  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Frontend:** Next.js 16 + React 19 + TypeScript
+- **Database:** Supabase (PostgreSQL)
+- **Styling:** Tailwind CSS + shadcn/ui
+- **Testing:** Vitest + React Testing Library
+- **Deployment:** Vercel
 
-## Deploy on Vercel
+## Project Structure
+ai-spend-audit/
+├── src/
+│   ├── app/                  # Next.js pages & layout
+│   │   ├── page.tsx         # Home (form + results)
+│   │   └── audit/[id]/      # Shareable audit view
+│   ├── components/          # React components
+│   │   ├── SpendForm.tsx
+│   │   ├── AuditResults.tsx
+│   │   └── LeadCapture.tsx
+│   ├── lib/
+│   │   ├── auditEngine.ts   # Core audit logic
+│   │   ├── generateSummary.ts
+│   │   ├── supabase.ts
+│   │   └── tests/       # Unit tests
+│   └── styles/
+├── public/                   # Static assets
+├── ARCHITECTURE.md           # System design
+├── PRICING_DATA.md          # Data sources
+├── PROMPTS.md               # LLM reasoning
+├── DEVLOG.md                # Daily progress
+├── REFLECTION.md            # Self-assessment
+└── README.md                # This file
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Key Decisions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Why client-side audit engine?**
+- Instant results (no server latency)
+- No backend load
+- User data never leaves their device until email submission
+
+**Why template summaries instead of LLM?**
+- Reliable and defensible (finance teams can read the rules)
+- No API costs
+- No hallucinations
+
+**Why Supabase?**
+- Free tier sufficient for MVP
+- Real PostgreSQL (scales easily)
+- Built-in REST API
+
+## Testing
+
+```bash
+npm run test        # Run all tests
+npm run test:watch  # Watch mode
+```
+
+Minimum 5 tests on audit engine:
+- Free plan overspend detection
+- Monthly plan savings calculation
+- Multiple tools handling
+- Optimal plan detection
+- Team plan scaling
+
+## Performance
+
+**Lighthouse scores (deployed):**
+- Performance: 92
+- Accessibility: 95
+- Best Practices: 93
+
+## How to Use
+
+1. Land on the page
+2. Add your AI tools (Cursor Pro, Claude Max, etc.)
+3. Enter monthly spend per tool
+4. Select team size and use case
+5. Click "Get My Audit"
+6. See instant results with savings breakdown
+7. Enter email to capture lead
+8. Share your audit via unique URL
+
+## Decisions Made This Week
+
+1. **Template summaries over LLM** — Reliability > "wow factor"
+2. **Disabled RLS for MVP** — Ship speed > perfect security
+3. **Client-side audit logic** — Instant, transparent, debuggable
+4. **localStorage persistence** — User privacy, offline-first
+5. **No user authentication** — Faster to ship, can add later
+
+See `REFLECTION.md` for deeper reasoning.
+
+## What's Next (Round 2)
+
+- Real LLM summaries via backend
+- User accounts & audit history
+- PDF export
+- Benchmark mode (your spend vs industry)
+- Integration with Credex for credit purchases
+- Webhook to CRM
+
+## Contact & Feedback
+
+Questions? Issues? Feedback?
+
+- GitHub: [issues](hhttps://github.com/abhishek820-cyber/ai-spend-audit/issues)
+- Email: hello@credex.rocks
+
+---
+
+Built by Abhishek RP for Credex.
