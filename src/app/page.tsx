@@ -6,15 +6,18 @@ import SpendForm from '@/components/SpendForm'
 import AuditResults from '@/components/AuditResults'
 import LeadCapture from '@/components/LeadCapture'
 import { generateAudit, type ToolInput } from '@/lib/auditEngine'
+import { generateAuditSummary } from '@/lib/generateSummary'
 import { supabase } from '@/lib/supabase'
 
 export default function Home() {
   const [auditData, setAuditData] = useState<any>(null)
   const [auditId, setAuditId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [summary, setSummary] = useState<string | null>(null)
 
   const handleFormSubmit = async (formData: any) => {
     setLoading(true)
+    setSummary(null)
 
     try {
       // Generate audit
@@ -22,7 +25,7 @@ export default function Home() {
 
       // Save to database
       const publicId = uuidv4().slice(0, 8)
-      const { data, error } = await supabase.from('audits').insert([
+      const { error } = await supabase.from('audits').insert([
         {
           public_id: publicId,
           tools: formData.tools,
@@ -36,6 +39,17 @@ export default function Home() {
       } else {
         setAuditId(publicId)
         setAuditData(audit)
+
+        // Generate summary
+        const summaryText = await generateAuditSummary({
+          tools: formData.tools,
+          totalMonthlySavings: audit.totalMonthlySavings,
+          totalAnnualSavings: audit.totalAnnualSavings,
+          useCase: formData.useCase,
+          teamSize: formData.teamSize,
+        })
+        console.log('Summary generated:', summaryText)
+        setSummary(summaryText)
       }
     } catch (err) {
       console.error('Error generating audit:', err)
@@ -80,6 +94,14 @@ export default function Home() {
               totalAnnualSavings={auditData.totalAnnualSavings}
               onShare={handleShare}
             />
+
+            {summary && (
+              <div className="bg-white rounded-lg shadow-xl p-8 border-l-4 border-blue-500">
+                <h3 className="text-lg font-bold mb-3 text-gray-900">AI Advisor Summary</h3>
+                <p className="text-gray-700 leading-relaxed">{summary}</p>
+              </div>
+            )}
+
             <div className="bg-white rounded-lg shadow-xl p-8">
               <LeadCapture auditId={auditId!} monthlySavings={auditData.totalMonthlySavings} />
             </div>
