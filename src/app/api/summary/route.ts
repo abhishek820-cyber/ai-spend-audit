@@ -31,7 +31,7 @@ Write a warm, encouraging summary that acknowledges their current setup and high
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer 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`,
+         Authorization: `Bearer ${apiKey}`,
         'HTTP-Referer': 'https://ai-spend-audit.vercel.app',
       },
       body: JSON.stringify({
