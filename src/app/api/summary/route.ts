@@ -16,7 +16,7 @@ export async function POST(request: Request) {
 
     const { toolsList, teamSize, useCase, totalSpend, monthlySavings } = body
 
-    const prompt = `You are a helpful AI advisor for startup spend optimization. Based on this AI tool audit, write a personalized 1-paragraph (100 words max) summary with specific, actionable advice.
+    const prompt = `You are a helpful AI advisor for startup spend optimization. Based on this AI tool audit, write a personalized 2-3 paragraph summary with specific, actionable advice. Each paragraph should be complete and not cut off mid-sentence.
 
 Audit Details:
 - Tools used: ${toolsList}
@@ -25,8 +25,11 @@ Audit Details:
 - Monthly spending: $${totalSpend}
 - Potential monthly savings: $${monthlySavings}
 
-Write a warm, encouraging summary that acknowledges their current setup and highlights the savings opportunity. Be specific about what they're doing well.`
+Paragraph 1: Acknowledge what they're doing well with their current setup.
+Paragraph 2: Explain specifically where they're overspending and why.
+Paragraph 3: Give 2-3 concrete next steps they can take this week.
 
+Write in a warm, direct tone. Do not cut off mid-sentence. Complete every thought fully.`
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -42,7 +45,7 @@ Write a warm, encouraging summary that acknowledges their current setup and high
             content: prompt,
           },
         ],
-        max_tokens: 200,
+        max_tokens: 500,
       }),
     })
 
