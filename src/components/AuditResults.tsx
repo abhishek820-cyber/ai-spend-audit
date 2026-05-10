@@ -1,5 +1,6 @@
 'use client'
 
+import ExportPDFButton from '@/components/ExportPDFButton'
 import { AuditResult } from '@/lib/auditEngine'
 import {
   BarChart,
@@ -63,7 +64,7 @@ export default function AuditResults({
   const hasAnySavings = totalMonthlySavings > 0
 
   return (
-    <div className="space-y-gutter">
+    <div className="space-y-gutter" id="audit-report">
       {/* Hero savings card */}
       <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-md shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-stack-md">
@@ -79,10 +80,7 @@ export default function AuditResults({
               <span className="material-symbols-outlined text-[18px]">share</span>
               Share Audit
             </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 border border-outline-variant text-on-surface-variant rounded-lg text-body-sm hover:bg-surface-container transition-all">
-              <span className="material-symbols-outlined text-[18px]">download</span>
-              Export PDF
-            </button>
+            <ExportPDFButton targetId="audit-report" filename="ai-spend-audit.pdf" />
           </div>
         </div>
 
