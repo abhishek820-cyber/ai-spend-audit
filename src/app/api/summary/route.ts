@@ -45,7 +45,7 @@ Write in a warm, direct tone. Do not cut off mid-sentence. Complete every though
             content: prompt,
           },
         ],
-        max_tokens: 500,
+        max_tokens: 1000,
       }),
     })
 
