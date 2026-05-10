@@ -11,6 +11,7 @@ import { generateAuditSummary } from '@/lib/generateSummary'
 import { supabase } from '@/lib/supabase'
 import BenchmarkMode from '@/components/BenchmarkMode'
 import { useToast } from '@/components/Toast'
+import DarkModeToggle from '@/components/DarkModeToggle'
 
 export default function Home() {
   const [auditData, setAuditData] = useState<any>(null)
@@ -44,7 +45,6 @@ export default function Home() {
         showToast('Audit generated successfully!', 'success')
         setLoading(false)
 
-        // Load summary separately after results show
         setSummaryLoading(true)
         const summaryText = await generateAuditSummary({
           tools: formData.tools,
@@ -72,6 +72,7 @@ export default function Home() {
     }
   }
 
+  // 1. Loading State Header
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -81,6 +82,7 @@ export default function Home() {
               <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
               <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
             </div>
+            <DarkModeToggle />
           </div>
         </header>
         <main className="pt-24 pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
@@ -94,6 +96,7 @@ export default function Home() {
     )
   }
 
+  // 2. Results State Header
   if (auditData) {
     return (
       <div className="min-h-screen bg-background">
@@ -103,18 +106,21 @@ export default function Home() {
               <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
               <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
             </div>
-            <button
-              onClick={() => {
-                setAuditData(null)
-                setAuditId(null)
-                setSummary(null)
-                setSavedFormData(null)
-              }}
-              className="flex items-center gap-1 text-primary text-body-sm font-medium hover:text-on-primary-fixed-variant transition-colors"
-            >
-              <span className="material-symbols-outlined text-[18px]">arrow_back</span>
-              New Audit
-            </button>
+            <div className="flex items-center gap-2">
+              <DarkModeToggle />
+              <button
+                onClick={() => {
+                  setAuditData(null)
+                  setAuditId(null)
+                  setSummary(null)
+                  setSavedFormData(null)
+                }}
+                className="flex items-center gap-1 text-primary text-body-sm font-medium hover:text-on-primary-fixed-variant transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+                New Audit
+              </button>
+            </div>
           </div>
         </header>
 
@@ -134,7 +140,6 @@ export default function Home() {
             />
           </div>
 
-          {/* AI Summary */}
           {summaryLoading ? (
             <div className="mt-gutter bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
               <div className="p-stack-md border-b border-outline-variant bg-surface-bright flex items-center gap-3">
@@ -181,6 +186,7 @@ export default function Home() {
     )
   }
 
+  // 3. Landing Page Header
   return (
     <main className="min-h-screen bg-background flex flex-col">
       <header className="bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 w-full z-50">
@@ -189,7 +195,8 @@ export default function Home() {
             <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
             <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <DarkModeToggle />
             <button className="bg-surface-container-low text-primary border border-outline-variant rounded-full px-4 py-2 text-label-md hover:bg-surface-variant transition-colors flex items-center gap-base">
               <span>Sign In</span>
               <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -222,7 +229,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Stats Cards */}
             <div className="w-full md:w-1/2 grid grid-cols-2 gap-gutter">
               {[
                 { icon: 'savings', label: 'Avg Monthly Savings', value: '$2,400', trend: '+32%' },
@@ -247,7 +253,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Social Proof */}
         <section className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-stack-lg border-y border-outline-variant py-stack-md bg-surface-container-lowest">
           <p className="text-label-md text-on-surface-variant text-center mb-stack-sm uppercase tracking-widest">
             Trusted by engineering teams at
@@ -259,7 +264,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Audit Form */}
         <section id="audit-form" className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-stack-lg">
           <div className="text-center mb-stack-lg">
             <h2 className="text-h1 text-on-surface mb-stack-sm">Run Your Free Audit</h2>
@@ -279,7 +283,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Features Section */}
         <section className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mb-stack-lg">
           <div className="text-center mb-stack-lg">
             <h2 className="text-h1 text-on-surface mb-stack-sm">Engineered for Precision</h2>
@@ -342,7 +345,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Final CTA */}
         <section className="px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto mt-stack-lg">
           <div className="bg-secondary-container rounded-xl p-stack-lg text-center flex flex-col items-center border border-tertiary-fixed-dim">
             <h2 className="text-h2 text-on-secondary-container mb-stack-sm">Ready to optimize your stack?</h2>
@@ -359,7 +361,6 @@ export default function Home() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-on-secondary-fixed w-full py-stack-lg border-t border-on-secondary-fixed-variant mt-stack-lg">
         <div className="flex flex-col md:flex-row justify-between items-center px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto space-y-4 md:space-y-0">
           <div className="flex flex-col items-center md:items-start gap-stack-xs">

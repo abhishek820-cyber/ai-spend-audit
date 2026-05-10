@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import DarkModeToggle from '@/components/DarkModeToggle'
 
 export default function AuditPage() {
   const params = useParams()
@@ -45,6 +46,7 @@ export default function AuditPage() {
               <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
               <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
             </div>
+            <DarkModeToggle />
           </div>
         </header>
         <main className="flex-1 flex items-center justify-center pt-16">
@@ -66,6 +68,7 @@ export default function AuditPage() {
               <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
               <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
             </div>
+            <DarkModeToggle />
           </div>
         </header>
         <main className="flex-1 flex items-center justify-center pt-16 px-margin-mobile">
@@ -105,13 +108,16 @@ export default function AuditPage() {
             <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
             <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
           </div>
-          <Link
-            href="/"
-            className="flex items-center gap-2 bg-primary text-on-primary rounded-full px-4 py-2 text-label-md hover:bg-on-primary-fixed-variant transition-colors"
-          >
-            <span className="material-symbols-outlined text-[18px]">add_circle</span>
-            Run Free Audit
-          </Link>
+          <div className="flex items-center gap-2">
+            <DarkModeToggle />
+            <Link
+              href="/"
+              className="flex items-center gap-2 bg-primary text-on-primary rounded-full px-4 py-2 text-label-md hover:bg-on-primary-fixed-variant transition-colors"
+            >
+              <span className="material-symbols-outlined text-[18px]">add_circle</span>
+              Run Free Audit
+            </Link>
+          </div>
         </div>
       </header>
 
