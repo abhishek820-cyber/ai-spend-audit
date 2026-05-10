@@ -8,9 +8,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from 'recharts'
+import CountUp from '@/components/CountUp'
 
 interface AuditResultsProps {
   results: AuditResult[]
@@ -93,7 +93,12 @@ export default function AuditResults({
               <span className="material-symbols-outlined text-[48px] text-on-primary">savings</span>
             </div>
             <p className="text-body-sm text-on-primary opacity-90 mb-2">Potential Monthly Savings</p>
-            <p className="text-display-sm text-on-primary font-bold">${totalMonthlySavings.toFixed(2)}</p>
+            <CountUp
+              value={totalMonthlySavings}
+              prefix="$"
+              duration={1800}
+              className="text-display-sm text-on-primary font-bold block"
+            />
             <div className="flex items-center gap-1 text-primary-fixed-dim mt-1">
               <span className="material-symbols-outlined text-[16px]">task_alt</span>
               <span className="text-label-md">{results.length} tools analyzed</span>
@@ -107,7 +112,13 @@ export default function AuditResults({
                 <span className="material-symbols-outlined text-[20px]">calendar_month</span>
               </div>
             </div>
-            <p className="text-display-sm text-on-surface font-bold">${totalAnnualSavings.toFixed(2)}</p>
+            <CountUp
+              value={totalAnnualSavings}
+              prefix="$"
+              duration={2000}
+              delay={200}
+              className="text-display-sm text-on-surface font-bold block"
+            />
             <p className="text-label-md text-primary mt-1">Per year potential</p>
           </div>
 
@@ -118,7 +129,13 @@ export default function AuditResults({
                 <span className="material-symbols-outlined text-[20px]">category</span>
               </div>
             </div>
-            <p className="text-display-sm text-on-surface font-bold">{results.length}</p>
+            <CountUp
+              value={results.length}
+              decimals={0}
+              duration={800}
+              delay={400}
+              className="text-display-sm text-on-surface font-bold block"
+            />
             <p className="text-label-md text-on-surface-variant mt-1">AI tools in your stack</p>
           </div>
         </div>
@@ -136,7 +153,7 @@ export default function AuditResults({
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5">
-                <div className="w-3 h-3 rounded-sm bg-[#bbcabf]" />
+                <div className="w-3 h-3 rounded-sm bg-[#e0e3e5]" />
                 <span className="text-label-md text-on-surface-variant">Current</span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -234,11 +251,21 @@ export default function AuditResults({
                 </div>
                 <div>
                   <p className="text-label-md text-on-surface-variant uppercase mb-1">Monthly Savings</p>
-                  <p className="text-numeric-data text-primary">${result.monthlySavings.toFixed(2)}</p>
+                  <CountUp
+                    value={result.monthlySavings}
+                    prefix="$"
+                    duration={1200}
+                    className="text-numeric-data text-primary"
+                  />
                 </div>
                 <div>
                   <p className="text-label-md text-on-surface-variant uppercase mb-1">Annual Savings</p>
-                  <p className="text-numeric-data text-primary">${result.annualSavings.toFixed(2)}</p>
+                  <CountUp
+                    value={result.annualSavings}
+                    prefix="$"
+                    duration={1400}
+                    className="text-numeric-data text-primary"
+                  />
                 </div>
               </div>
 

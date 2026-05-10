@@ -1,6 +1,16 @@
-export function SkeletonBlock({ className = '' }: { className?: string }) {
+import React from 'react'
+
+interface SkeletonBlockProps {
+  className?: string
+  style?: React.CSSProperties
+}
+
+export function SkeletonBlock({ className = '', style }: SkeletonBlockProps) {
   return (
-    <div className={`bg-surface-container-high rounded-lg animate-pulse ${className}`} />
+    <div 
+      className={`bg-surface-container-high rounded-lg animate-pulse ${className}`} 
+      style={style} 
+    />
   )
 }
 
