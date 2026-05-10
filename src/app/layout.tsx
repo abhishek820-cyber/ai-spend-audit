@@ -1,15 +1,16 @@
-import type { Metadata } from "next";
-import "@/styles/globals.css";
+import type { Metadata } from 'next'
+import '@/styles/globals.css'
+import { ToastProvider } from '@/components/Toast'
 
 export const metadata: Metadata = {
-  title: "AI Spend Audit",
-  description: "Discover hidden savings in your AI tool stack",
-};
+  title: 'AI Spend Audit',
+  description: 'Discover hidden savings in your AI tool stack',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
@@ -19,7 +20,9 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <ToastProvider>{children}</ToastProvider>
+      </body>
     </html>
-  );
+  )
 }

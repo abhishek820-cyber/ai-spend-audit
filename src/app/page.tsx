@@ -10,6 +10,7 @@ import { generateAudit } from '@/lib/auditEngine'
 import { generateAuditSummary } from '@/lib/generateSummary'
 import { supabase } from '@/lib/supabase'
 import BenchmarkMode from '@/components/BenchmarkMode'
+import { useToast } from '@/components/Toast'
 
 export default function Home() {
   const [auditData, setAuditData] = useState<any>(null)
@@ -17,11 +18,11 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [summary, setSummary] = useState<string | null>(null)
   const [summaryLoading, setSummaryLoading] = useState(false)
-  // Save form data in state
   const [savedFormData, setSavedFormData] = useState<any>(null)
 
+  const { showToast } = useToast()
+
   const handleFormSubmit = async (formData: any) => {
-    // Persist form data to state at the start
     setSavedFormData(formData)
     setLoading(true)
     setSummary(null)
@@ -40,6 +41,7 @@ export default function Home() {
       if (!error) {
         setAuditId(publicId)
         setAuditData(audit)
+        showToast('Audit generated successfully!', 'success')
         setLoading(false)
 
         // Load summary separately after results show
@@ -56,6 +58,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error('Error:', err)
+      showToast('Failed to generate audit. Please try again.', 'error')
       setLoading(false)
     }
   }
@@ -64,7 +67,8 @@ export default function Home() {
     if (auditId) {
       const url = `${window.location.origin}/audit/${auditId}`
       navigator.clipboard.writeText(url)
-      alert('Audit URL copied to clipboard!')
+        .then(() => showToast('Audit URL copied to clipboard!', 'success'))
+        .catch(() => showToast('Failed to copy URL. Please try again.', 'error'))
     }
   }
 
@@ -179,7 +183,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="bg-surface-container-lowest border-b border-outline-variant shadow-sm fixed top-0 w-full z-50">
         <div className="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 max-w-container-max mx-auto">
           <div className="flex items-center gap-stack-sm cursor-pointer hover:text-primary transition-colors">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useToast } from '@/components/Toast'
 
 interface LeadCaptureProps {
   auditId: string
@@ -13,14 +14,47 @@ export default function LeadCapture({ auditId, monthlySavings }: LeadCaptureProp
   const [companyName, setCompanyName] = useState('')
   const [role, setRole] = useState('')
   const [teamSize, setTeamSize] = useState('')
+  const [honeypot, setHoneypot] = useState('') // ← bot trap
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [submitCount, setSubmitCount] = useState(0)
+  const [lastSubmitTime, setLastSubmitTime] = useState(0)
+
+  const { showToast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Honeypot check — bots fill hidden fields, humans don't
+    if (honeypot) {
+      console.warn('Bot detected via honeypot')
+      setSubmitted(true) // fake success so bots don't retry
+      return
+    }
+
+    // Rate limiting — max 3 submissions per 60 seconds
+    const now = Date.now()
+    if (submitCount >= 3 && now - lastSubmitTime < 60000) {
+      const rateLimitMsg = 'Too many attempts. Please wait a minute.'
+      setError(rateLimitMsg)
+      showToast(rateLimitMsg, 'error')
+      return
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      const emailMsg = 'Please enter a valid email address.'
+      setError(emailMsg)
+      showToast(emailMsg, 'error')
+      return
+    }
+
     setLoading(true)
     setError(null)
+    setSubmitCount((c) => c + 1)
+    setLastSubmitTime(now)
 
     try {
       const { error: insertError } = await supabase.from('leads').insert([{
@@ -33,11 +67,14 @@ export default function LeadCapture({ auditId, monthlySavings }: LeadCaptureProp
 
       if (insertError) {
         setError(`Error: ${insertError.message}`)
+        showToast('Failed to save report. Please try again.', 'error')
       } else {
         setSubmitted(true)
+        showToast('Report saved! Check your inbox shortly.', 'success')
       }
     } catch (err) {
       setError('An error occurred. Please try again.')
+      showToast('Connection error. Please check your internet.', 'error')
     } finally {
       setLoading(false)
     }
@@ -69,11 +106,28 @@ export default function LeadCapture({ auditId, monthlySavings }: LeadCaptureProp
         <span className="material-symbols-outlined text-primary">mail</span>
         <div>
           <h3 className="text-h3 text-on-surface">Get Your Full Report</h3>
-          <p className="text-body-sm text-on-surface-variant">Enter your email to receive the complete audit and recommendations.</p>
+          <p className="text-body-sm text-on-surface-variant">
+            Enter your email to receive the complete audit and recommendations.
+          </p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+
+        {/* Honeypot field — hidden from humans, visible to bots */}
+        <div style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }} aria-hidden="true">
+          <label htmlFor="website">Website</label>
+          <input
+            id="website"
+            name="website"
+            type="text"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+
         <div>
           <label className={labelClass}>Email *</label>
           <input
@@ -144,6 +198,10 @@ export default function LeadCapture({ auditId, monthlySavings }: LeadCaptureProp
             </>
           )}
         </button>
+
+        <p className="text-label-md text-on-surface-variant text-center">
+          No spam. Unsubscribe anytime.
+        </p>
       </form>
     </div>
   )
