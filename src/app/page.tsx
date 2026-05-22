@@ -12,6 +12,11 @@ import { supabase } from '@/lib/supabase'
 import BenchmarkMode from '@/components/BenchmarkMode'
 import { useToast } from '@/components/Toast'
 import DarkModeToggle from '@/components/DarkModeToggle'
+import SpendTrendChart from '@/components/SpendTrendChart'
+import { useAuth } from '@/context/AuthContext'
+import AuthModal from '@/components/AuthModal'
+import UserMenu from '@/components/UserMenu'
+
 
 export default function Home() {
   const [auditData, setAuditData] = useState<any>(null)
@@ -20,7 +25,8 @@ export default function Home() {
   const [summary, setSummary] = useState<string | null>(null)
   const [summaryLoading, setSummaryLoading] = useState(false)
   const [savedFormData, setSavedFormData] = useState<any>(null)
-
+  const { user } = useAuth()
+  const [showAuthModal, setShowAuthModal] = useState(false)
   const { showToast } = useToast()
 
   const handleFormSubmit = async (formData: any) => {
@@ -37,6 +43,7 @@ export default function Home() {
         tools: formData.tools,
         total_monthly_savings: audit.totalMonthlySavings,
         total_annual_savings: audit.totalAnnualSavings,
+        user_id: user?.id || null,
       }])
 
       if (!error) {
@@ -82,7 +89,20 @@ export default function Home() {
               <span className="material-symbols-outlined text-primary">account_balance_wallet</span>
               <span className="text-h2 font-bold text-primary tracking-tight">AI Spend Audit</span>
             </div>
-            <DarkModeToggle />
+            <div className="flex items-center gap-2">
+              <DarkModeToggle />
+              {user ? (
+                <UserMenu />
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-surface-container-low text-primary border border-outline-variant rounded-full px-4 py-2 text-label-md hover:bg-surface-variant transition-colors flex items-center gap-base"
+                >
+                  <span>Sign In</span>
+                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              )}
+            </div>
           </div>
         </header>
         <main className="pt-24 pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
@@ -92,6 +112,7 @@ export default function Home() {
           </div>
           <AuditResultsSkeleton />
         </main>
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       </div>
     )
   }
@@ -108,6 +129,17 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <DarkModeToggle />
+              {user ? (
+                <UserMenu />
+              ) : (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-surface-container-low text-primary border border-outline-variant rounded-full px-4 py-2 text-label-md hover:bg-surface-variant transition-colors flex items-center gap-base"
+                >
+                  <span>Sign In</span>
+                  <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              )}
               <button
                 onClick={() => {
                   setAuditData(null)
@@ -115,7 +147,7 @@ export default function Home() {
                   setSummary(null)
                   setSavedFormData(null)
                 }}
-                className="flex items-center gap-1 text-primary text-body-sm font-medium hover:text-on-primary-fixed-variant transition-colors"
+                className="flex items-center gap-1 text-primary text-body-sm font-medium hover:text-on-primary-fixed-variant transition-colors ml-2"
               >
                 <span className="material-symbols-outlined text-[18px]">arrow_back</span>
                 New Audit
@@ -131,6 +163,19 @@ export default function Home() {
             totalAnnualSavings={auditData.totalAnnualSavings}
             onShare={handleShare}
           />
+
+          <div className="mt-gutter">
+            <SpendTrendChart
+              currentMonthlySpend={auditData.results.reduce(
+                (sum: number, r: any) => sum + r.currentSpend, 0
+              )}
+              optimizedMonthlySpend={
+                auditData.results.reduce((sum: number, r: any) => sum + r.currentSpend, 0) -
+                auditData.totalMonthlySavings
+              }
+              teamSize={parseInt(savedFormData?.teamSize || '1')}
+            />
+          </div>
 
           <div className="mt-gutter">
             <BenchmarkMode
@@ -182,6 +227,7 @@ export default function Home() {
             <LeadCapture auditId={auditId!} monthlySavings={auditData.totalMonthlySavings} />
           </div>
         </main>
+        {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
       </div>
     )
   }
@@ -197,10 +243,17 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <DarkModeToggle />
-            <button className="bg-surface-container-low text-primary border border-outline-variant rounded-full px-4 py-2 text-label-md hover:bg-surface-variant transition-colors flex items-center gap-base">
-              <span>Sign In</span>
-              <span className="material-symbols-outlined text-sm">arrow_forward</span>
-            </button>
+            {user ? (
+              <UserMenu />
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="bg-surface-container-low text-primary border border-outline-variant rounded-full px-4 py-2 text-label-md hover:bg-surface-variant transition-colors flex items-center gap-base"
+              >
+                <span>Sign In</span>
+                <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -376,6 +429,7 @@ export default function Home() {
           </nav>
         </div>
       </footer>
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
     </main>
   )
 }
