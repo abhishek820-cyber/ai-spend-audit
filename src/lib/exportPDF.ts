@@ -1,22 +1,23 @@
-import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
 
 export async function exportAuditPDF(elementId: string, filename: string = 'audit-report.pdf') {
   const element = document.getElementById(elementId)
   if (!element) {
     console.error('Element not found:', elementId)
-    return
+    return false
   }
 
   try {
+    // Dynamically import html2canvas to avoid type issues
+    const html2canvas = (await import('html2canvas')).default
+
     const canvas = await html2canvas(element, {
-      scale: 2,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
       windowWidth: element.scrollWidth,
       windowHeight: element.scrollHeight,
-    })
+    } as any)
 
     const imgData = canvas.toDataURL('image/png')
     const pdf = new jsPDF({
@@ -31,7 +32,6 @@ export async function exportAuditPDF(elementId: string, filename: string = 'audi
     const imgHeight = canvas.height
     const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight)
     const imgX = (pdfWidth - imgWidth * ratio) / 2
-    const imgY = 0
 
     const totalPages = Math.ceil((imgHeight * ratio) / pdfHeight)
 
@@ -41,7 +41,7 @@ export async function exportAuditPDF(elementId: string, filename: string = 'audi
         imgData,
         'PNG',
         imgX,
-        -(page * pdfHeight) + imgY,
+        -(page * pdfHeight),
         imgWidth * ratio,
         imgHeight * ratio
       )
